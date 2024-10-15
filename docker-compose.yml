@@ -1,4 +1,9 @@
 version: "3.6"
+
+networks:
+  internal:
+
+
 services:
   db:
     image: postgres
@@ -8,12 +13,14 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: paper
       POSTGRES_PASSWORD: mysecretpassword
-    ports:
-      - 5432:5432
+    # ports:
+    #  - 5432:5432
+    networks:
+      - internal
     volumes:
       - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -25,6 +32,8 @@ services:
       - .env
     ports:
       - "3000:3000"
+    networks:
+      - internal
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
